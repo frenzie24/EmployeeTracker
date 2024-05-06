@@ -19,7 +19,9 @@
   "dependencies": {
     "cli-format": "^3.0.9",
     "colors": "^1.4.0",
-    "inquirer": "^8.2.4"
+    "express": "^4.19.2",
+    "inquirer": "^8.2.4",
+    "pg": "^8.11.5"
   },
   "description": ""
 }
