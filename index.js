@@ -3,6 +3,7 @@ let logger = require('./scripts/logger.js');
 let colors = require('colors')
 let { validateInput, filterInput } = require('./scripts/prompter.js')
 let Prompter = require('./scripts/prompter.js')
+let Server = require('./scripts/server.js')
 
 const beginning = [{
     type: 'list',

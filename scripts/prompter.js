@@ -1,10 +1,4 @@
-
 let inquirer = require('inquirer');
-let logger = require('./logger.js');
-
-
-
-
 
 
 // class prompter requires a questions obj and a callback function when initialized
