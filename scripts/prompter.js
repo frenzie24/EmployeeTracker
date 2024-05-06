@@ -2,7 +2,6 @@
 let inquirer = require('inquirer');
 let logger = require('./logger.js');
 
-let findColorDataByName = require('./colorFinder.js')
 
 
 
