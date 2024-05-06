@@ -23,8 +23,8 @@ class Server {
             res.status(404).end();
         });
         
-        this.app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
+        this.app.listen(this.PORT, () => {
+            console.log(`Server running on port ${this.PORT}`);
         });
 
         this.pool;
@@ -71,6 +71,7 @@ pool.query(
 );
 */
 // Query database
+/*
 const query = () => {
     pool.query('SELECT * FROM Departments', function (err, { rows }) {
         console.log(rows);
@@ -85,5 +86,5 @@ app.use((req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
-
+*/
 module.exports = Server;

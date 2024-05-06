@@ -15,11 +15,11 @@ const beginning = [{
         "view all employees",
         "add a department",
         "add a role",
-        " add an employee",
+        "add an employee",
         "update an employee role",]
 }
 ]
 
 let prompt = new Prompter(beginning, ()=>{});
-
+let server = new Server();
 prompt.startPrompt();
