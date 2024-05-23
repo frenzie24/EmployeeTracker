@@ -37,16 +37,35 @@ const beginning = [{
 }
 ]
 
-const tester = async(sql) => {
-    const test = await server.pool.query(sql,  (err, { rows }) => {
+let addRoleQuestions = [
+    { 
+        type: 'input', 
+    name: 'role', 
+    message: 'Name of new role?' 
+},
+{ 
+    type: 'input', 
+name: 'salary', 
+message: 'How much should this peon be paid?' 
+},
+{ 
+    type: 'list', 
+name: 'department', 
+message: 'What department?',
+
+}
+]
+
+const tester = async (sql) => {
+    const test = await server.pool.query(sql, (err, { rows }) => {
         if (err) {
             error(err);
-         //   return err
+            //   return err
         }
-     //   log(sql, 'magenta');
-       // log(rows, 'red');
+        //   log(sql, 'magenta');
+        // log(rows, 'red');
         let rowString = JSON.stringify(rows);
-     //   return rowString;
+        //   return rowString;
         //_selectAllFromTable(this, sql);
     });
     return test;
@@ -55,6 +74,7 @@ const tester = async(sql) => {
 const handleBegin = (answer) => {
     warn('handlign answer')
     answer = answer.dowhat;
+    if (answer.department) server.addDepartment(answer.department);
     log(['answer:', answer], 'green');
 
     const ind = beginChoices.indexOf(answer);
@@ -62,22 +82,46 @@ const handleBegin = (answer) => {
     switch (ind) {
         case 0:
             sql = 'SELECT * FROM department';
-       
-            server.selectAllFromTable('department') 
-         
+
+            server.selectAllFromTable('department')
+
             break;
         case 1:
             sql = 'SELECT * FROM role';
-             /*select  title, salary, department.name as department from role join department on role.department_id = department.id;*/
-            server.selectAndJoin('role.id, title, salary, department.name as department', 'role', 'department', 'role.department_id = department.id'); 
+            /*select  title, salary, department.name as department from role join department on role.department_id = department.id;*/
+            server.selectAndJoin('role.id, title, salary, department.name as department', 'role', 'department', 'role.department_id = department.id');
             break;
         case 2:
             //SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS departments FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id;
+
+            server.getEmployees();
             break;
 
         case 3:
+            prompt.next({ type: 'input', name: 'department', message: 'Name of new department?' }, (answer) => {
+                server.addDepartment(answer.department);
+            })
             break;
         case 4:
+            server.pool.query(`select * from department`, (err, { rows }) => {
+                addRoleQuestions[2].choices =rows.map(({ id, name }) => ({
+                    name: `${name}`,
+                    value: id
+                  }))
+                if(err) error(err);
+                prompt.next(addRoleQuestions, (answer)=> {
+                   
+                log(answer.department, 'white');
+                    let role = {
+                        name: answer.role,
+                        salary: answer.salary,
+                        department: Math.floor(answer.department)
+                    };
+
+                    server.addRole(role).then(log('role added!', 'magenta'));
+
+                })
+            })
             break;
         case 5:
             break;

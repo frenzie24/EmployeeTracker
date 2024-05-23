@@ -47,43 +47,82 @@ function findColor(msg, color) {
 const welcome = () => {
     // it's easy afffff
 
-// log is the most robust function logger has and using it in your js is as easy as
-log("Hi there! I'm Logger!", 'yellow', 'bgGreen');
-// this will print 'Hi There! I'm logger!' with yellow text and a green background
+    // log is the most robust function logger has and using it in your js is as easy as
+    log("Hi there! I'm Logger!", 'yellow', 'bgGreen');
+    // this will print 'Hi There! I'm logger!' with yellow text and a green background
 
-info('I set info messages to have a grey background and white text!');
+    info('I set info messages to have a grey background and white text!');
 
-warn('I set warn messages to have a white background and red text!');
+    warn('I set warn messages to have a white background and red text!');
 
-error('I set error messages to have a yellow background and red text!');
+    error('I set error messages to have a yellow background and red text!');
 
-log('I hope I can help you debug CLI someday!', 'green');
-log('To install, run [npm install colors] in your project and add logger to your file structure.\nHappy logging!', 'yellow', 'bgBlack'); 
+    log('I hope I can help you debug CLI someday!', 'green');
+    log('To install, run [npm install colors] in your project and add logger to your file structure.\nHappy logging!', 'yellow', 'bgBlack');
+
+}
+
+const logArray = (msg, color, bgColor) => {
+  
+    // always check for text color first
+    checkColorsArray = (c) => {
+        if (Array.isArray(c)) {
+
+            if (msg.length == c.length) {
+                msg.map((line, index) => {
+                    line = findColor(line, color[index]);
+                    console.log(line)
+                })
+            } else {
+                msg.map((line, index) => {
+                    console.log(findColor(line, c[index % c.length]));
+                 
+                })
+            }
+        } else {
+            msg.map(line => {
+                line = findColor(line, c);
+                console.log(line)
+            })
+        }
+
+    }
+   
+    if (bgColor) checkColorsArray(bgColor);
+    if (color) checkColorsArray(color);
+    else console.log(findColor(line, 'white'));
 
 }
 
 class Logger {
-    constructor(){}
+    constructor() { }
 
     log = (msg, color, bgColor) => {
+
+        if (Array.isArray(msg)) {
+            logArray(msg, color, bgColor)
+            /*
+             console.log(findColor('this is an array', 'magenta'));
+             msg.map(m => {
+                 console.log(findColor(m, color));
+             });*/
+            return;
+        }
         if (color) msg = findColor(msg, color);
         if (bgColor) msg = findColor(msg, bgColor);
-        if (Array.isArray(msg)) {
-            console.log('this is an array')
-            msg.map(m => {
-                console.log(m);
-            });
-        } else console.log(msg)
+        console.log(msg)
     }
 
+
+
     info = (msg) => {
-       msg = colors.bgGray(colors.white(msg));
+        msg = colors.bgGray(colors.white(msg));
         if (Array.isArray(msg)) {
             console.info(msg);
         } else console.info(msg)
     }
 
-    warn = (msg) =>{
+    warn = (msg) => {
         msg = colors.bgWhite(colors.red(msg));
         console.warn(msg);
     }

@@ -12,11 +12,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 */
 // Connect to database
-class  Server  {
+class Server {
     constructor(database) {
         this.PORT = process.env.PORT || 3001;
         this.app = express();
-       // this.router = new Router();
+        // this.router = new Router();
 
         // Express middleware
         this.app.use(express.urlencoded({ extended: false }));
@@ -84,12 +84,29 @@ class  Server  {
     }
 
     selectAndJoin = async (SELECTION, TABLE1, TABLE2, JOIN) => {
-       
+
         const sql = `SELECT ${SELECTION} FROM ${TABLE1} INNER JOIN ${TABLE2} ON ${JOIN}`;
-        
+
         this.pool.query(sql, (err, { rows }) => {
             console.table(rows);
         })
+    }
+
+    addDepartment = async (name) => {
+        this.pool.query(`INSERT INTO department (name) VALUES (${name})`);
+    }
+
+    addRole = async (role) => {
+        log([`Inserting new role: ${role.name}`, `with a salary of: ${role.salary}`, `into department with id: ${role.department}`], ['red', 'white']);
+        const depID = role.department;
+        this.pool.query(`INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3);`, [role.name, role.salary, depID]);
+    }
+
+    getEmployees = async () => {
+        this.pool.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, CONCAT(manager.first_name, ' ', manager.last_name) AS manager_name FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee AS manager ON employee.manager_id = manager.id",
+            (err, { rows }) => {
+                console.table(rows);
+            });
     }
 
     selectAllFromTable = async (TABLE) => {
@@ -102,7 +119,7 @@ class  Server  {
             //log(sql, 'magenta');
             console.table(rows);
             console.log(rows);
-            
+
             return rows;
             //_selectAllFromTable(this, sql);
         });/*
