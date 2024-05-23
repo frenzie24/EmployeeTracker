@@ -4,7 +4,7 @@ let inquirer = require('inquirer');
 // class prompter requires a questions obj and a callback function when initialized
 class Prompter {
     constructor(questions, handleAnswers) {
-       
+
         if (!handleAnswers) {
             throw new Error('handleAnswers for this prompt are undefined.');
         }
@@ -33,11 +33,21 @@ class Prompter {
     }
 
     next = async (question, answerHandler) => {
-        question.validate = question.validate ? question.validate : this.validateInput;
-        question.filter = question.filter ? question.filter : this.filterInput;
-        await inquirer.prompt(question).then(answer=> {
+
+
+       
+            question.map(q => {
+                if(q.type == 'list'){
+                q.choices.push('----------------')
+                q.validate = q.validate ? q.validate : this.validateInput;
+                q.filter = q.filter ? q.filter : this.filterInput;}
+            })
+
+        
+      
+        await inquirer.prompt(question).then(answer => {
             answerHandler(answer);
-        }) ;
+        });
     }
 
     //start prompting the user for input answering passed questions to be handled by passed handleAnswers

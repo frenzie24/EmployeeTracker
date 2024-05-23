@@ -1,17 +1,10 @@
 const express = require('express');
+const { default: inquirer } = require('inquirer');
 const { log, info, warn, error } = new (require('./logger.js'))
 // Import and require Pool (node-postgres)
 // We'll be creating a Connection Pool. Read up on the benefits here: https://node-postgres.com/features/pooling
 const { Pool } = require('pg');
 
-/*const PORT = process.env.PORT || 3001;
-const app = express();
-
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-*/
-// Connect to database
 class Server {
     constructor(database, prompt) {
         this.PORT = process.env.PORT || 3001;
@@ -43,10 +36,11 @@ class Server {
         )
 
         this.pool.connect().then(() => {
-            console.log(`Connected to the ${database} database.`)
+            log([`Connected to the ${database} database.`, 'Ready'], 'yellow');
+
+            this.startPrompt();
 
         });
-
 
     }
     connectToDB = (database) => {
@@ -73,20 +67,20 @@ class Server {
 
         await this.pool.query(sql, (err, { rows }) => {
             console.table(rows);
-            this.prompt.startPrompt();
+            this.startPrompt();
         })
     }
 
-    addDepartment = async (prompt) => {
+    addDepartment = async () => {
         await this.prompt.next({ type: 'input', name: 'department', message: 'Name of new department?' }, (answer) => {
             log(answer.department)
-            this.pool.query(`INSERT INTO department (name) VALUES ($1);`, [answer.department], (err) => { if(err) error(err) });
+            this.pool.query(`INSERT INTO department (name) VALUES ($1);`, [answer.department], (err) => { if (err) error(err) });
             log('Department added!', 'magenta');
-            this.prompt.startPrompt();
+            this.startPrompt();
         })
     }
 
-    addRole = async (prompt, questions) => {
+    addRole = async (questions) => {
         await this.pool.query(`select * from department`, (err, { rows }) => {
             questions[2].choices = rows.map(({ id, name }) => ({
                 name: `${name}`,
@@ -105,13 +99,14 @@ class Server {
                 const depID = role.department;
                 this.pool.query(`INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3);`, [role.name, role.salary, depID]);
                 log('Role added!', 'magenta');
-                this.prompt.startPrompt();
+
+                this.startPrompt();
 
             })
         })
     }
 
-    addEmployee = async (prompt, questions) => {
+    addEmployee = async (questions) => {
         let employees;
         await this.pool.query(`select * from employee`, (err, { rows }) => {
             employees = rows;
@@ -138,7 +133,7 @@ class Server {
                     log(['adding a new employee', employee], 'blue');
                     this.pool.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4);`, [answer.firstName, answer.lastName, answer.role, answer.manager]);
                     log('Employee added!', 'magenta');
-                    this.prompt.startPrompt();
+                    this.startPrompt();
 
                 })
             })
@@ -147,7 +142,7 @@ class Server {
         })
     }
 
-    updateEmployee = async (prompt, questions) => {
+    updateEmployee = async (questions) => {
         let employees;
         let roles;
         await this.pool.query("SELECT * FROM employee", (err, { rows }) => {
@@ -156,6 +151,7 @@ class Server {
                 name: `${first_name} ${last_name}`,
                 value: id
             }));
+            questions[0].choices.push(new inquirer.sep)
             this.pool.query("SELECT * FROM role", (err, { rows }) => {
 
                 questions[1].choices = rows.map(({ id, title }) => ({
@@ -166,8 +162,8 @@ class Server {
 
 
                     this.pool.query(`UPDATE employee SET role_id = ${answer.role} WHERE id = ${answer.employee}`);
-                    log('Employee updated!', 'magenta');
-                    this.prompt.startPrompt();
+
+                    this.startPrompt();
                 })
             });
         });
@@ -178,8 +174,15 @@ class Server {
         this.pool.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS department, CONCAT(manager.first_name, ' ', manager.last_name) AS manager_name FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id LEFT JOIN employee AS manager ON employee.manager_id = manager.id",
             (err, { rows }) => {
                 console.table(rows);
-                this.prompt.startPrompt();
+                this.startPrompt();
             });
+    }
+
+    startPrompt = async () => {
+        
+            log('Taking you back to main menu', 'green')
+            this.prompt.startPrompt();
+       
     }
 
     selectAllFromTable = async (TABLE) => {
@@ -191,7 +194,7 @@ class Server {
             }
             //log(sql, 'magenta');
             console.table(rows);
-            this.prompt.startPrompt();
+            this.startPrompt();
             //  return rows;
             //_selectAllFromTable(this, sql);
         });

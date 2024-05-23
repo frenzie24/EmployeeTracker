@@ -95,28 +95,11 @@ let updateEmployeeQuestions = [
     }
 ]
 
-const tester = async (sql) => {
-    const test = await server.pool.query(sql, (err, { rows }) => {
-        if (err) {
-            error(err);
-            //   return err
-        }
-        //   log(sql, 'magenta'); 
-        prompt.startPrompt();;
-        // log(rows, 'red');
-        let rowString = JSON.stringify(rows);
-        //   return rowString;
-        //_selectAllFromTable(this, sql);
-    });
-    return test;
-}
 
 const handleBegin = async (answer) => {
-    warn('handlign answer')
+   
     answer = answer.dowhat;
-    if (answer.department) server.addDepartment(answer.department);
-    log(['answer:', answer], 'green');
-
+  
     const ind = beginChoices.indexOf(answer);
     let sql;
     switch (ind) {
@@ -125,53 +108,48 @@ const handleBegin = async (answer) => {
 
             server.selectAllFromTable('department').then(() => {
 
-                //  prompt.startPrompt();
+              
             });
 
             break;
         case 1:
             sql = 'SELECT * FROM role';
-            /*select  title, salary, department.name as department from role join department on role.department_id = department.id;*/
             server.selectAndJoin('role.id, title, salary, department.name as department', 'role', 'department', 'role.department_id = department.id').then(() => {
 
-                //   prompt.startPrompt();
+           
             });
             break;
         case 2:
-            //SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS departments FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id;
-
+         
             server.getEmployees().then(() => {
 
-                //  prompt.startPrompt();
             });
             break;
 
         case 3:
-            // prompt.next({ type: 'input', name: 'department', message: 'Name of new department?' }, (answer) => {
             server.addDepartment(prompt).then(() => {
 
-                //   prompt.startPrompt();
+            
             });
-            //})
+          
             break;
         case 4:
             server.addRole(prompt, addRoleQuestions).then(() => {
 
-                //  prompt.startPrompt();
+   
             });
 
             break;
         case 5:
             server.addEmployee(prompt, addEmployeeQuestions).then(() => {
 
-                //  prompt.startPrompt();
             });
 
             break;
         case 6:
             server.updateEmployee(prompt, updateEmployeeQuestions).then(() => {
 
-                //   prompt.startPrompt();
+
             });
             break;
         case 7:
@@ -185,6 +163,8 @@ const handleBegin = async (answer) => {
 
 let prompt = new Prompter(beginning, handleBegin);
 let server = new Server('employees', prompt);
+
+//prompt.startPrompt();
 //server.connectToDB('Employees');
 /*
 setTimeout(() => {
@@ -194,5 +174,4 @@ setTimeout(() => {
 }, 1000)*/
 
 setTimeout(() => {
-    prompt.startPrompt();
 }, 2000);
