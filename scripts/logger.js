@@ -44,12 +44,30 @@ function findColor(msg, color) {
 
 //pretty console logs, less typing
 
+const welcome = () => {
+    // it's easy afffff
+
+// log is the most robust function logger has and using it in your js is as easy as
+log("Hi there! I'm Logger!", 'yellow', 'bgGreen');
+// this will print 'Hi There! I'm logger!' with yellow text and a green background
+
+info('I set info messages to have a grey background and white text!');
+
+warn('I set warn messages to have a white background and red text!');
+
+error('I set error messages to have a yellow background and red text!');
+
+log('I hope I can help you debug CLI someday!', 'green');
+log('To install, run [npm install colors] in your project and add logger to your file structure.\nHappy logging!', 'yellow', 'bgBlack'); 
+
+}
+
 class Logger {
     constructor(){}
 
     log = (msg, color, bgColor) => {
-        if (bgColor) msg = findColor(msg, bgColor);
         if (color) msg = findColor(msg, color);
+        if (bgColor) msg = findColor(msg, bgColor);
         if (Array.isArray(msg)) {
             console.log('this is an array')
             msg.map(m => {
@@ -72,7 +90,10 @@ class Logger {
 
     error = (msg) => {
         msg = colors.bgYellow(colors.red(msg));
+        console.error(msg);
     }
 }
+
+
 
 module.exports = Logger;
