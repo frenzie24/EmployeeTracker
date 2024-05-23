@@ -175,6 +175,8 @@ const handleBegin = async (answer) => {
             });
             break;
         case 7:
+            log('Cya next time, boo', 'red');
+            process.exit();
             break;
         default:
             break;
