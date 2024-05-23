@@ -101,11 +101,7 @@ class Logger {
 
         if (Array.isArray(msg)) {
             logArray(msg, color, bgColor)
-            /*
-             console.log(findColor('this is an array', 'magenta'));
-             msg.map(m => {
-                 console.log(findColor(m, color));
-             });*/
+         
             return;
         }
         if (color) msg = findColor(msg, color);

@@ -38,22 +38,61 @@ const beginning = [{
 ]
 
 let addRoleQuestions = [
-    { 
-        type: 'input', 
-    name: 'role', 
-    message: 'Name of new role?' 
-},
-{ 
-    type: 'input', 
-name: 'salary', 
-message: 'How much should this peon be paid?' 
-},
-{ 
-    type: 'list', 
-name: 'department', 
-message: 'What department?',
+    {
+        type: 'input',
+        name: 'role',
+        message: 'Name of new role?'
+    },
+    {
+        type: 'number',
+        name: 'salary',
+        message: 'How much should this peon be paid?'
+    },
+    {
+        type: 'list',
+        name: 'department',
+        message: 'What department?',
 
-}
+    }
+]
+
+
+let addEmployeeQuestions = [
+    {
+        type: 'input',
+        name: 'firstName',
+        message: 'First name of new employee?'
+    },
+    {
+        type: 'input',
+        name: 'lastName',
+        message: 'Last name of new employee?'
+    },
+    {
+        type: 'list',
+        name: 'role',
+        message: 'What role for this employee?'
+    },
+    {
+        type: 'list',
+        name: 'manager',
+        message: 'Who manages this peon?',
+
+    }
+]
+
+let updateEmployeeQuestions = [
+    {
+        type: 'list',
+        name: 'employee',
+        message: 'Which employee?'
+    },
+    {
+        type: 'list',
+        name: 'role',
+        message: 'What\'s this peon\'s new role?',
+
+    }
 ]
 
 const tester = async (sql) => {
@@ -62,7 +101,8 @@ const tester = async (sql) => {
             error(err);
             //   return err
         }
-        //   log(sql, 'magenta');
+        //   log(sql, 'magenta'); 
+        prompt.startPrompt();;
         // log(rows, 'red');
         let rowString = JSON.stringify(rows);
         //   return rowString;
@@ -71,7 +111,7 @@ const tester = async (sql) => {
     return test;
 }
 
-const handleBegin = (answer) => {
+const handleBegin = async (answer) => {
     warn('handlign answer')
     answer = answer.dowhat;
     if (answer.department) server.addDepartment(answer.department);
@@ -83,49 +123,56 @@ const handleBegin = (answer) => {
         case 0:
             sql = 'SELECT * FROM department';
 
-            server.selectAllFromTable('department')
+            server.selectAllFromTable('department').then(() => {
+
+                //  prompt.startPrompt();
+            });
 
             break;
         case 1:
             sql = 'SELECT * FROM role';
             /*select  title, salary, department.name as department from role join department on role.department_id = department.id;*/
-            server.selectAndJoin('role.id, title, salary, department.name as department', 'role', 'department', 'role.department_id = department.id');
+            server.selectAndJoin('role.id, title, salary, department.name as department', 'role', 'department', 'role.department_id = department.id').then(() => {
+
+                //   prompt.startPrompt();
+            });
             break;
         case 2:
             //SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS departments FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id;
 
-            server.getEmployees();
+            server.getEmployees().then(() => {
+
+                //  prompt.startPrompt();
+            });
             break;
 
         case 3:
-            prompt.next({ type: 'input', name: 'department', message: 'Name of new department?' }, (answer) => {
-                server.addDepartment(answer.department);
-            })
+            // prompt.next({ type: 'input', name: 'department', message: 'Name of new department?' }, (answer) => {
+            server.addDepartment(prompt).then(() => {
+
+                //   prompt.startPrompt();
+            });
+            //})
             break;
         case 4:
-            server.pool.query(`select * from department`, (err, { rows }) => {
-                addRoleQuestions[2].choices =rows.map(({ id, name }) => ({
-                    name: `${name}`,
-                    value: id
-                  }))
-                if(err) error(err);
-                prompt.next(addRoleQuestions, (answer)=> {
-                   
-                log(answer.department, 'white');
-                    let role = {
-                        name: answer.role,
-                        salary: answer.salary,
-                        department: Math.floor(answer.department)
-                    };
+            server.addRole(prompt, addRoleQuestions).then(() => {
 
-                    server.addRole(role).then(log('role added!', 'magenta'));
+                //  prompt.startPrompt();
+            });
 
-                })
-            })
             break;
         case 5:
+            server.addEmployee(prompt, addEmployeeQuestions).then(() => {
+
+                //  prompt.startPrompt();
+            });
+
             break;
         case 6:
+            server.updateEmployee(prompt, updateEmployeeQuestions).then(() => {
+
+                //   prompt.startPrompt();
+            });
             break;
         case 7:
             break;
@@ -135,7 +182,7 @@ const handleBegin = (answer) => {
 };
 
 let prompt = new Prompter(beginning, handleBegin);
-let server = new Server('employees');
+let server = new Server('employees', prompt);
 //server.connectToDB('Employees');
 /*
 setTimeout(() => {
