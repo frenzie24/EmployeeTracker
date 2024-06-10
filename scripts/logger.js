@@ -99,11 +99,11 @@ class Logger {
 
     log = (msg, color, bgColor) => {
 
-        if (Array.isArray(msg)) {
+     /*   if (Array.isArray(msg)) {
             logArray(msg, color, bgColor)
          
             return;
-        }
+        }*/
         if (color) msg = findColor(msg, color);
         if (bgColor) msg = findColor(msg, bgColor);
         console.log(msg)

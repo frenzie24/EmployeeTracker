@@ -34,17 +34,18 @@ class Prompter {
 
     next = async (question, answerHandler) => {
 
+        if (!Array.isArray(question)) question = [question];
 
-       
-            question.map(q => {
-                if(q.type == 'list'){
+        question.map(q => {
+            if (q.type == 'list') {
                 q.choices.push('----------------')
                 q.validate = q.validate ? q.validate : this.validateInput;
-                q.filter = q.filter ? q.filter : this.filterInput;}
-            })
+                q.filter = q.filter ? q.filter : this.filterInput;
+            }
+        })
 
-        
-      
+
+
         await inquirer.prompt(question).then(answer => {
             answerHandler(answer);
         });
@@ -69,7 +70,10 @@ class Prompter {
 
     // default filter callback
     filterInput(input) {
-        return input.trim();
+        process.stdout.write(input);
+        try {
+            return input.trim();
+        } catch { return input; }
     }
     // defualt validate callback
     validateInput(input) {

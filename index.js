@@ -51,8 +51,7 @@ let addRoleQuestions = [
     {
         type: 'list',
         name: 'department',
-        message: 'What department?',
-
+        message: 'What department?'
     }
 ]
 
@@ -127,27 +126,27 @@ const handleBegin = async (answer) => {
             break;
 
         case 3:
-            server.addDepartment(prompt).then(() => {
+            server.addDepartment().then(() => {
 
             
             });
           
             break;
         case 4:
-            server.addRole(prompt, addRoleQuestions).then(() => {
+            server.addRole( addRoleQuestions).then(() => {
 
    
             });
 
             break;
         case 5:
-            server.addEmployee(prompt, addEmployeeQuestions).then(() => {
+            server.addEmployee( addEmployeeQuestions).then(() => {
 
             });
 
             break;
         case 6:
-            server.updateEmployee(prompt, updateEmployeeQuestions).then(() => {
+            server.updateEmployee( updateEmployeeQuestions).then(() => {
 
 
             });

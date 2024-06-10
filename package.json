@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/frenzie24/EmployeeTracker#readme",
   "dependencies": {
+    "@frenzie24/logger": "^1.0.764",
     "cli-format": "^3.0.9",
     "colors": "^1.4.0",
     "express": "^4.19.2",

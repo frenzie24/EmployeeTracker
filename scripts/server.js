@@ -1,6 +1,6 @@
 const express = require('express');
 const { default: inquirer } = require('inquirer');
-const { log, info, warn, error } = new (require('./logger.js'))
+const { log, info, warn, error } = require ('@frenzie24/logger')
 // Import and require Pool (node-postgres)
 // We'll be creating a Connection Pool. Read up on the benefits here: https://node-postgres.com/features/pooling
 const { Pool } = require('pg');
@@ -82,13 +82,14 @@ class Server {
 
     addRole = async (questions) => {
         await this.pool.query(`select * from department`, (err, { rows }) => {
+            log(questions)
             questions[2].choices = rows.map(({ id, name }) => ({
                 name: `${name}`,
-                value: id
+                value: `${id}`
             }))
             if (err) error(err);
             this.prompt.next(questions, (answer) => {
-
+               log(answer)
                 let role = {
                     name: answer.role,
                     salary: answer.salary,
@@ -112,13 +113,13 @@ class Server {
             employees = rows;
             questions[3].choices = employees.map(({ id, first_name, last_name }) => ({
                 name: `${first_name} ${last_name}`,
-                value: id
+                value: `${id}`
             }));
             this.pool.query('select * from role', (err, { rows }) => {
                 if (err) error(err);
                 questions[2].choices = rows.map(({ id, title }) => ({
                     name: `${title}`,
-                    value: id
+                    value: `${id}`
                 }));
                 if (err) error(err);
                 this.prompt.next(questions, (answer) => {
@@ -149,14 +150,13 @@ class Server {
             employees = rows;
             questions[0].choices = employees.map(({ id, first_name, last_name }) => ({
                 name: `${first_name} ${last_name}`,
-                value: id
+                value: `${id}`
             }));
-            questions[0].choices.push(new inquirer.sep)
             this.pool.query("SELECT * FROM role", (err, { rows }) => {
 
                 questions[1].choices = rows.map(({ id, title }) => ({
                     name: `${title}`,
-                    value: id
+                    value: `${id}`
                 }));
                 this.prompt.next(questions, (answer) => {
 
@@ -179,10 +179,10 @@ class Server {
     }
 
     startPrompt = async () => {
-        
+
             log('Taking you back to main menu', 'green')
             this.prompt.startPrompt();
-       
+
     }
 
     selectAllFromTable = async (TABLE) => {
